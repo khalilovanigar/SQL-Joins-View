@@ -93,7 +93,7 @@ ADD IdPost INT;
 
 ALTER TABLE Teachers
 ADD CONSTRAINT FK_Teachers_Posts
-FOREIGN KEY (IdPost) REFERENCES Posts(Id);
+IdPost FOREIGN KEY REFERENCES Posts(Id);
 
 
 ------------------------------------------------------------------------------------------------------
@@ -117,33 +117,73 @@ INSERT INTO Teachers (Id, TeacherName, Code, PostId, Telefon, Salary, Rise, Hire
 -- 16.1. All job titles.
 
 
-
-
-
+CREATE VIEW V_AllPosts AS
+SELECT PostName
+FROM Posts;
 
 
 -- 16.2. All the names of teachers.
 
 
+CREATE VIEW V_AllTeacherNames AS
+SELECT TeacherName
+FROM Teachers;
 
 
 -- 16.3. The identifier, the name of the teacher, his position, the general s / n (sort by s \ n).
 
 
+CREATE VIEW V_TeacherWithSalary AS
+SELECT 
+    t.Id,
+    t.TeacherName,
+    p.PostName,
+    (t.Salary + t.Rise) AS TotalSalary
+FROM 
+    Teachers t
+LEFT JOIN 
+    Posts p ON t.IdPost = p.Id
+ORDER BY 
+    TotalSalary;
 
 
 -- 16.4. Identification number, surname, telephone number (only those who have a phone number).
 
+CREATE VIEW V_TeachersWithPhone AS
+SELECT 
+    Id,
+    TeacherName,
+    Phone
+FROM 
+    Teachers
+WHERE 
+    Phone IS NOT NULL;
 
 
 
 -- 16.5. Surname, position, date of admission in the format [dd/mm/yy].
 
 
-
+CREATE VIEW V_TeacherFormattedDateShort AS
+SELECT 
+    t.TeacherName,
+    p.PostName,
+    FORMAT(t.HireDate, 'dd/MM/yy') AS FormattedHireDate
+FROM 
+    Teachers t
+LEFT JOIN 
+    Posts p ON t.IdPost = p.Id;
 
 
 -- 16.6. Surname, position, date of receipt in the format [dd month_text yyyy].
 
 
-
+CREATE VIEW V_TeacherFormattedDateLong AS
+SELECT 
+    t.TeacherName,
+    p.PostName,
+    FORMAT(t.HireDate, 'dd MMMM yyyy', 'en-us') AS FormattedHireDate
+FROM 
+    Teachers t
+LEFT JOIN 
+    Posts p ON t.IdPost = p.Id;
